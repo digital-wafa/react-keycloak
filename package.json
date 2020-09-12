@@ -1,6 +1,6 @@
 {
   "name": "@digital-wafa/react-keycloak",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a keycloak library for react",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -49,5 +49,13 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digital-wafa/react-keycloak.git"
+  },
+  "bugs": {
+    "url": "https://github.com/digital-wafa/react-keycloak/issues"
+  },
+  "homepage": "https://github.com/digital-wafa/react-keycloak#readme"
 }
