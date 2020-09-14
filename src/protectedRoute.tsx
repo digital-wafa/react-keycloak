@@ -21,12 +21,12 @@ interface ProtectedRouteProps {
 
 function ProtectedRoute({RouteComponent, path, ComponentToRender, ...rest}:ProtectedRouteProps){
 
-    const {keycloak, authenticated, loginOptions, loadingComponent} = useKeycloakContext();
+    const {keycloak, authenticated, loginOptions, initOptions, loadingComponent} = useKeycloakContext();
 
     useEffect(function(){
       if(!authenticated){
         //@ts-ignore
-        keycloak.init({promiseType : "native"}).then(function(success : boolean) {        
+        keycloak.init(initOptions).then(function(success : boolean) {        
             if(!success){
               keycloak.login(loginOptions);
             }     

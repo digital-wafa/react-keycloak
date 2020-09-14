@@ -1,5 +1,5 @@
 import React, { ReactChild, createContext, useState, useContext } from "react";
-import { KeycloakInstance, KeycloakLoginOptions } from "keycloak-js";
+import { KeycloakInitOptions, KeycloakInstance, KeycloakLoginOptions } from "keycloak-js";
 import {
   AuthLogoutHandler,
   AuthRefreshErrorHandler,
@@ -11,6 +11,7 @@ import {
 interface KeycloakContextType {
   keycloak: KeycloakInstance;
   loginOptions: KeycloakLoginOptions;
+  initOptions: KeycloakInitOptions;
   authenticated: boolean;
   setAuthenticated: Function;
   loadingComponent: any;
@@ -24,7 +25,11 @@ interface KeycloakProviderProps {
   /**
    * keycloak login options
    */
-  loginOptions: KeycloakLoginOptions;
+  loginOptions?: KeycloakLoginOptions;
+  /**
+   * keycloak init options
+   */
+  initOptions?: KeycloakInitOptions;
   children: ReactChild;
   /**
    * the loading component to show while keyclaok is initializing
@@ -51,15 +56,22 @@ export const useKeycloakContext = (): KeycloakContextType => {
 export const KeycloakProvider = ({
   keycloak,
   loginOptions,
+  initOptions,
   loadingComponent,
   children,
   isAuthenticated = false
 }: KeycloakProviderProps) => {
   const [authenticated, setAuthenticated] = useState(isAuthenticated);
 
+
   const value = {
     keycloak,
     loginOptions,
+    initOptions : {
+      promiseType : "native", // just to support old version of keycloak. the new versions of keycloak adapter use the native promise by default
+      checkLoginIframe: false,  // fix logout bug in keycloak v6
+      ...initOptions
+    },
     loadingComponent,
     authenticated,
     setAuthenticated,

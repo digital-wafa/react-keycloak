@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { KeycloakProvider } from "../src/keycloakContext";
 import ProtectedRoute from "../src/protectedRoute";
 import { MemoryRouter, Route } from "react-router-dom";
@@ -8,7 +8,7 @@ import { Router } from "@reach/router";
 const keycloakInstance = {
   token: "token",
   refreshToken: "refresh token",
-  init: jest.fn().mockResolvedValueOnce(true),
+  init: jest.fn().mockResolvedValue(true),
   login: jest.fn(),
 };
 
@@ -24,12 +24,11 @@ const ReactRouterPage = () => {
 const ReachRouterPage = () => <div>Home</div>;
 
 describe("ProtectedRoute", () => {
-  it("should init keycloak", async () => {
+  it("should init keycloak with the default value", async () => {
     render(
       <KeycloakProvider
         //@ts-ignore
         keycloak={keycloakInstance}
-        loginOptions={loginOptions}
         loadingComponent={<div>...loading</div>}
       >
         <ProtectedRoute
@@ -39,16 +38,41 @@ describe("ProtectedRoute", () => {
       </KeycloakProvider>
     );
     expect(keycloakInstance.init).toBeCalledTimes(1);
+    expect(keycloakInstance.init).toBeCalledWith({
+      promiseType: "native",
+      checkLoginIframe: false,
+    });
+    const loading = await screen.findByText("...loading");
+    expect(loading).toBeInTheDocument();
+  });
+
+  it("should init keycloak with the provided value", async () => {
+    keycloakInstance.init.mockClear();
+    render(
+      <KeycloakProvider
+        //@ts-ignore
+        keycloak={keycloakInstance}
+        initOptions={{ checkLoginIframe: true }}
+        loadingComponent={<div>...loading</div>}
+      >
+        <ProtectedRoute
+          RouteComponent={() => <div>Route component</div>}
+          path="/profile"
+        />
+      </KeycloakProvider>
+    );
+    expect(keycloakInstance.init).toBeCalledTimes(1);
+    expect(keycloakInstance.init).toBeCalledWith({
+      promiseType: "native",
+      checkLoginIframe: true,
+    });
     const loading = await screen.findByText("...loading");
     expect(loading).toBeInTheDocument();
   });
 
   it("should call the login method", async () => {
-    keycloakInstance.init.mockReturnValue({
-      then: (cb: Function) => {
-        cb(false);
-      },
-    });
+    keycloakInstance.init.mockClear();
+    keycloakInstance.init.mockResolvedValue(false);
     render(
       <KeycloakProvider
         //@ts-ignore
@@ -62,7 +86,11 @@ describe("ProtectedRoute", () => {
         />
       </KeycloakProvider>
     );
-    expect(keycloakInstance.login).toBeCalledTimes(1);
+    await waitFor(() => expect(keycloakInstance.login).toBeCalledTimes(1));
+    expect(keycloakInstance.login).toBeCalledWith({
+      idpHint: "ei",
+      scope: "phone",
+    });
     const loading = await screen.findByText("...loading");
     expect(loading).toBeInTheDocument();
   });
