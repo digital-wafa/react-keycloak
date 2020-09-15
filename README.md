@@ -5,6 +5,9 @@
 ![build](https://img.shields.io/travis/digital-wafa/react-keycloak/master)
 ![codecov](https://img.shields.io/codecov/c/github/digital-wafa/react-keycloak/master)
 ![types](https://img.shields.io/npm/types/typescript)
+![size](https://img.shields.io/bundlephobia/minzip/@digital-wafa/react-keycloak)
+![downloads](https://img.shields.io/npm/dw/@digital-wafa/react-keycloak)
+![license](https://img.shields.io/github/license/digital-wafa/react-keycloak)
 
 ---
 
@@ -33,11 +36,12 @@ const keycloakInstance = new Keycloak({
 
 Then wrape your component with the keycloak provider, `KeycloakProvider` accept the following props :
 
-| Props            | Required | Description                                                           |
-| ---------------- | -------  | --------------------------------------------------------------------- |
-| keycloak         | yes     | the keycloak instance you created                                     |
-| loginOptions     | yes     | the keycloak login options                                            |
-| loadingComponent | only if you use the included `ProtectedRoute` component     | the loading component to show when redirecting to keycloak login page|
+| Props            | Required                                                    | Description                                                           |
+| ---------------- | ------------------------------------------------------------| --------------------------------------------------------------------- |
+| keycloak         | yes                                                         | the keycloak instance you created                                     |
+| loginOptions     | no                                                          | keycloak login options                                                |
+| initOptions      | no                                                          | keycloak init options                                                 |
+| loadingComponent | only if you use the included `ProtectedRoute` component     | the loading component to show when redirecting to keycloak login page |
 
 <br>
 
@@ -62,6 +66,7 @@ finaly you can access the keycloak instance using the `useKeycloakContext` hook 
 {
   keycloak, // keycloak instance
   loginOptions, // keycloak login options
+  initOptions, // keycloak init options
   authenticated // is the user authenticated or not
 }
 ```
@@ -69,9 +74,21 @@ finaly you can access the keycloak instance using the `useKeycloakContext` hook 
 ```javascript
 import { useKeycloakContext } from "@digital-wafa/react-keycloak";
 
-const {keycloak, authenticated, loginOptions} = useKeycloakContext();
+const {keycloak, authenticated, loginOptions, initOptions} = useKeycloakContext();
 ```
 
+or import the context if you are using a class component 
+
+```javascript
+import { keycloakContext } from "@digital-wafa/react-keycloak"
+
+...
+
+class YourClassComponent extends React.Component {
+  static contextType = keycloakContext;
+  const {keycloak, authenticated, loginOptions, initOptions} = this.context;
+} 
+```
 
 NB: the token is refreshed automatically when it expire using the `onTokenExpired` event.
 
