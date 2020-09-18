@@ -1,6 +1,6 @@
 {
   "name": "@digital-wafa/react-keycloak",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "a keycloak library for react",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

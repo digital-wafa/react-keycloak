@@ -138,4 +138,23 @@ describe("ProtectedRoute", () => {
     const RouteComponent = await screen.findByText("Profile page :D");
     expect(RouteComponent).toBeInTheDocument();
   });
+
+
+  it("should throw an error if the loading component is missing", async () => {   
+    try {
+      render(
+        <KeycloakProvider
+          //@ts-ignore
+          keycloak={keycloakInstance}
+        >
+          <ProtectedRoute
+            RouteComponent={() => <div>Route component</div>}
+            path="/profile"
+          />
+        </KeycloakProvider>
+      );
+    } catch (error) {
+      expect(error.message).toEqual("You must provide the loadingComponent props to the KeycloakProvider when using the ProtectedRoute");
+    }
+  });
 });

@@ -23,6 +23,10 @@ function ProtectedRoute({RouteComponent, path, ComponentToRender, ...rest}:Prote
 
     const {keycloak, authenticated, loginOptions, initOptions, loadingComponent} = useKeycloakContext();
 
+    if(loadingComponent === undefined) {
+      throw new Error('You must provide the loadingComponent props to the KeycloakProvider when using the ProtectedRoute')
+    }
+
     useEffect(function(){
       if(!authenticated){
         //@ts-ignore
